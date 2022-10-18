@@ -1,0 +1,1 @@
+export const getLoader = ({ contacts }) => contacts.loading;
