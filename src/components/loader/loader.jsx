@@ -4,9 +4,9 @@ export const LoaderCreate = () => {
   return (
     <RotatingLines
       strokeColor="grey"
-      strokeWidth="5"
-      animationDuration="0.75"
-      width="24"
+      strokeWidth="4"
+      animationDuration="0.65"
+      width="20"
       visible={true}
     />
   );
@@ -15,8 +15,8 @@ export const LoaderCreate = () => {
 export const LoaderDelete = () => {
   return (
     <ProgressBar
-      height="80"
-      width="100"
+      height="60"
+      width="80"
       ariaLabel="progress-bar-loading"
       wrapperStyle={{}}
       wrapperClass="progress-bar-wrapper"
