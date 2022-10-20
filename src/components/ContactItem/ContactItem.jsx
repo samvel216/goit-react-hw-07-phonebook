@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 import { useDeleteContactMutation } from 'redux/contacts/contactsSlice';
 import { Text, Button, Wraper } from './ContactItem.styled';
-import { LoaderDelete } from '../Loader/Loader';
+import { ProgressBar } from 'react-loader-spinner';
 
 export function ContactItem({ name, number, id }) {
   const [deleteContact, { isLoading }] = useDeleteContactMutation();
@@ -19,7 +19,19 @@ export function ContactItem({ name, number, id }) {
         disabled={isLoading}
         onClick={() => deleteContact(id)}
       >
-        {isLoading ? <LoaderDelete /> : 'Delete'}
+        {isLoading ? (
+          <ProgressBar
+            height="60"
+            width="80"
+            ariaLabel="progress-bar-loading"
+            wrapperStyle={{}}
+            wrapperClass="progress-bar-wrapper"
+            borderColor="red"
+            barColor="#ffff"
+          />
+        ) : (
+          'Delete'
+        )}
       </Button>
     </>
   );

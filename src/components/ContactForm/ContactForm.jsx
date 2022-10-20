@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { RotatingLines } from 'react-loader-spinner';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import {
   useAddContactMutation,
@@ -14,7 +14,6 @@ import {
   SearchInput,
   SearchBtn,
 } from './ContactForm.styled';
-import { LoaderCreate } from '../Loader/Loader';
 
 export function ContactForm() {
   const [name, setName] = useLocalStorage('name', '');
@@ -77,7 +76,17 @@ export function ContactForm() {
       </SearchLabel>
 
       <SearchBtn type="submit" disabled={isLoading}>
-        {isLoading ? <LoaderCreate /> : 'Add contact'}
+        {isLoading ? (
+          <RotatingLines
+            strokeColor="grey"
+            strokeWidth="4"
+            animationDuration="0.65"
+            width="20"
+            visible={true}
+          />
+        ) : (
+          'Add contact'
+        )}
       </SearchBtn>
     </SearchForm>
   );
