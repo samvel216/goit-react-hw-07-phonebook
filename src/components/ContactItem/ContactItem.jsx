@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 import { useDeleteContactMutation } from 'redux/contacts/contactsSlice';
 import { Text, Button, Wraper } from './ContactItem.styled';
-import { LoaderDelete } from 'components';
+import { LoaderDelete } from '../Loader/Loader';
 
 export function ContactItem({ name, number, id }) {
   const [deleteContact, { isLoading }] = useDeleteContactMutation();
