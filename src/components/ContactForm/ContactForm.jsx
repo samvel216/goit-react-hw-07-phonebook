@@ -14,7 +14,7 @@ import {
   SearchInput,
   SearchBtn,
 } from './ContactForm.styled';
-import { LoaderCreate } from 'components';
+import { LoaderCreate } from '../Loader/Loader';
 
 export function ContactForm() {
   const [name, setName] = useLocalStorage('name', '');
