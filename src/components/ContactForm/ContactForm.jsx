@@ -1,109 +1,84 @@
-import { React } from "react";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useState } from "react";
-import shortid from "shortid";
-import PropTypes from 'prop-types';
-import styled from "styled-components";
 
+import { useLocalStorage } from 'hooks/useLocalStorage';
+import {
+  useAddContactMutation,
+  useGetContactsQuery,
+} from 'redux/contacts/contactsSlice';
+import optionsNotify from 'helpers/toastConfig';
 
-const ContactForm =({contacts, onSubmit})=>{
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
+import {
+  SearchForm,
+  SearchLabel,
+  SearchInput,
+  SearchBtn,
+} from './ContactForm.styled';
+import { LoaderCreate } from 'components';
 
-   const nameInputId = shortid.generate();
-   const numberInputId = shortid.generate();
+export function ContactForm() {
+  const [name, setName] = useLocalStorage('name', '');
+  const [number, setNumber] = useLocalStorage('number', '');
 
-    const updateInput = event => {
-        switch (event.target.name) {
-            case 'name':
-                setName(event.target.value)
-                break;
-            case 'number':
-                setPhone(event.target.value)
-                break;
-            default:
-                return;
-        }
-    };
-    const submitForm = (e) => {
-        e.preventDefault();
-        if (contacts.find(contact => contact.name === name)) {
-            toast.warn(`Contact ${name} is already in your list`);
-            return;
-        }
-        onSubmit(name,phone)
-        reset();
-    };
-    const reset = () => {
-        setName('' )
-        setPhone( '')
+  const { data: contacts = [] } = useGetContactsQuery();
+  const [addContact, { error, isLoading }] = useAddContactMutation();
+
+  const handleSubmit = evt => {
+    evt.preventDefault();
+
+    const isFindCopyContact = contacts.find(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (isFindCopyContact) {
+      toast.info(`${name} is already in contacts`, optionsNotify);
+      return;
     }
 
-        return (
-            <Form onSubmit={submitForm}>
-                 <FormLabel htmlFor={nameInputId}>Name
-                 <FormInput
-                     type="text"
-                     name="name"
-                     id={nameInputId}
-                     value={name}
-                     onChange ={updateInput}
-                     pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                     title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-                     required
-                    />
-                 </FormLabel>
-                 <FormLabel htmlFor={numberInputId}>Phone
-                  <FormInput
-                     type="tel"
-                     name="number"
-                     id={numberInputId}
-                     value={phone}
-                     onChange ={updateInput}
-                     pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                     title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-                     required
-                    />
-                 </FormLabel>
-                <FormBtn type="submit">ADD CONTACT</FormBtn>
-            </Form>
-            
-        )
-    }
+    const newContact = { name, number };
+    addContact(newContact);
 
-ContactForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired,
+    toast.success(`Contact ${name} add.`, optionsNotify);
+    reset();
+
+    error && toast.warning(`${error}`, optionsNotify);
+  };
+
+  const reset = () => {
+    setName('');
+    setNumber('');
+  };
+
+  return (
+    <SearchForm onSubmit={handleSubmit}>
+      <SearchLabel>
+        Name
+        <SearchInput
+          type="text"
+          name="name"
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          required
+          value={name}
+          onChange={evt => setName(evt.target.value)}
+        />
+      </SearchLabel>
+      <SearchLabel>
+        Number
+        <SearchInput
+          type="tel"
+          name="number"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+          value={number}
+          onChange={evt => setNumber(evt.target.value)}
+        />
+      </SearchLabel>
+
+      <SearchBtn type="submit" disabled={isLoading}>
+        {isLoading ? <LoaderCreate /> : 'Add contact'}
+      </SearchBtn>
+    </SearchForm>
+  );
 }
-export default ContactForm;
-const Form = styled.form`
-    display: grid;
-    
-`;
-const FormLabel = styled.label`
-  display: flex;
-  justify-content: center;
-  font-size: 25px;
-  margin-bottom: 15px;
-`;
-const FormInput = styled.input`
- margin-left: 20px;
- box-shadow:  0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-    border-radius: 2px;
-    border: none;
-`;
-
-const FormBtn = styled.button`
-    border: none;
-    border-radius: 5px;
-    font-size: 25px;
-    background-color: #fdfda3;
-    box-shadow:  0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-    border-radius: 5px;
-     &:hover{
-    background-color: #f3da90;
-     transform: scale(1.02);
- }
-`;
